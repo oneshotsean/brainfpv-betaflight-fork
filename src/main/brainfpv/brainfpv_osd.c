@@ -68,6 +68,7 @@
 #include "drivers/osd_symbols.h"
 
 #include "sensors/sensors.h"
+#include "common/sensor_alignment.h"
 #include "sensors/boardalignment.h"
 #include "sensors/compass.h"
 #include "sensors/acceleration.h"
@@ -91,6 +92,7 @@
 #include "flight/failsafe.h"
 #include "flight/imu.h"
 
+#include "build/version.h"
 #include "config/feature.h"
 #include "pg/pg.h"
 #include "pg/pg_ids.h"
@@ -158,7 +160,7 @@ PG_RESET_TEMPLATE(bfOsdConfig_t, bfOsdConfig,
   .sync_threshold_mode = BRAINFPV_OSD_SYNC_TH_MODE_DEFAULT,
 );
 
-const char * const gitTag = __GIT_TAG__;
+const char * const gitTag = FC_VERSION_STRING;
 
 void video_qspi_enable(void);
 extern binary_semaphore_t onScreenDisplaySemaphore;
@@ -646,7 +648,7 @@ void osdMain(void) {
                         }
 #endif
                         max7456DisplayPort.cleared = true;
-                        cmsUpdate(currentTime);
+                        cmsHandler(currentTime);
                     }
                     if (!cmsInMenu){
                         if (brainFPVOsdUpdate(currentTime)) {

@@ -40,7 +40,7 @@
 #include "drivers/light_led.h"
 #include "drivers/time.h"
 
-#include "drivers/rcc.h"
+#include "platform/rcc.h"
 
 #include "brainfpv/brainfpv_osd.h"
 #include "brainfpv/auto_sync_threshold.h"

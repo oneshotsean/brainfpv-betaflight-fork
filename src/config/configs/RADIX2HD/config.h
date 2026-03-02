@@ -72,7 +72,6 @@
 #define UART7_TX_PIN            NONE
 
 #define VBUS_SENSING_PIN        PA9
-#define SERIAL_PORT_COUNT       8
 
 // SPI device 1 - Gyro
 #define USE_SPI_DEVICE_1

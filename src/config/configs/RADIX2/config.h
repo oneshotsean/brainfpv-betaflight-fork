@@ -101,7 +101,6 @@
 #define UART6_TX_PIN            PC6
 
 #define VBUS_SENSING_PIN        PA9
-#define SERIAL_PORT_COUNT       7
 
 // SPI1 - Gyro
 #define USE_SPI_DEVICE_1

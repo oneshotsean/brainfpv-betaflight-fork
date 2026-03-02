@@ -8,6 +8,18 @@
 
 #include "osd/osd_elements.h"
 
+#if !defined(BRAINFPV_OSD_SYNC_TH_DEFAULT)
+#define BRAINFPV_OSD_SYNC_TH_DEFAULT 150
+#endif
+
+#if !defined(BRAINFPV_OSD_SYNC_TH_MIN)
+#define BRAINFPV_OSD_SYNC_TH_MIN 0
+#endif
+
+#if !defined(BRAINFPV_OSD_SYNC_TH_MAX)
+#define BRAINFPV_OSD_SYNC_TH_MAX 255
+#endif
+
 typedef struct bfOsdConfig_s {
     uint8_t sync_threshold;
     uint8_t white_level;

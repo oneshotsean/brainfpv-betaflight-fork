@@ -26,11 +26,11 @@
 #include "drivers/dma_reqmap.h"
 #include "drivers/io.h"
 #include "drivers/io_impl.h"
-#include "drivers/rcc.h"
+#include "platform/rcc.h"
 #include "drivers/resource.h"
 #include "drivers/dma.h"
 
-#include "drivers/adc_impl.h"
+#include "platform/adc_impl.h"
 #include "brainfpv/auto_sync_threshold.h"
 
 #ifdef USE_BRAINFPV_AUTO_SYNC_THRESHOLD
@@ -57,7 +57,7 @@ static IO_t adcPin;
 
 int autoSyncThresholdInit(void)
 {
-    ADCDevice dev;
+    adcDevice_e dev;
 
     memset(syncThresholdBuffer, 0, SYNC_TH_BUFFER_LEN);
     memset(histogramBuffer, 0, SYNC_TIP_HIST_LEN * sizeof(uint16_t));

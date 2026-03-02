@@ -28,6 +28,7 @@
 #include "drivers/max7456.h"
 
 #include "sensors/sensors.h"
+#include "common/sensor_alignment.h"
 #include "sensors/boardalignment.h"
 #include "sensors/compass.h"
 #include "sensors/acceleration.h"

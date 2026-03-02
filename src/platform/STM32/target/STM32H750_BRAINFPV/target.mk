@@ -11,7 +11,6 @@ STARTUP_SRC        = STM32/startup/startup_stm32h750xx_brainfpv.s
 TARGET_SRC += \
               drivers/accgyro/accgyro_mpu.c \
               drivers/accgyro/accgyro_spi_bmi270.c \
-              $(ROOT)/lib/main/BoschSensortec/BMI270-Sensor-API/bmi270_maximum_fifo.c \
               drivers/barometer/barometer_bmp388.c \
               drivers/barometer/barometer_2smpb_02b.c \
               drivers/barometer/barometer_dps310.c \
