@@ -3,7 +3,7 @@
 
 name: CI
 
-on:
+on: 
   workflow_call:
     inputs:
       release_build:
@@ -15,14 +15,11 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       targets: ${{ steps.get-targets.outputs.targets }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          submodules: recursive
+      - uses: actions/checkout@v4
 
       - name: Cache build toolchain
         uses: actions/cache@v4
@@ -35,10 +32,6 @@ jobs:
         if: steps.cache-toolchain.outputs.cache-hit != 'true'
         run: make arm_sdk_install
 
-      - name: Build pico tool and install
-        if: steps.cache-toolchain.outputs.cache-hit != 'true'
-        run: make picotool_install
-
       - name: Hydrate configuration
         id: get-config
         run: make configs
@@ -50,15 +43,13 @@ jobs:
   build:
     name: Build
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         target: ${{ fromJson(needs.setup.outputs.targets) }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          submodules: recursive
+        uses: actions/checkout@v4
 
       - name: Fetch toolchain from cache
         uses: actions/cache@v4
@@ -80,23 +71,20 @@ jobs:
         run: make EXTRA_FLAGS=-Werror ${{ matrix.target }}_rev
 
       - name: Publish build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target }}
-          path: |
-            obj/*.hex
-            obj/*.uf2
-            obj/*_${{ matrix.target }}*
+          name: Assets
+          path: obj/*.hex
           retention-days: 60
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: sudo apt-get install -y libblocksruntime-dev clang-18
+        run: sudo apt-get install -y libblocksruntime-dev clang-15
 
       - name: Run sanity checks
         run: make EXTRA_FLAGS=-Werror checks
@@ -108,7 +96,7 @@ jobs:
     name: Complete
     needs: [build, test]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check build matrix result
         if: ${{ needs.build.result != 'success' }}
