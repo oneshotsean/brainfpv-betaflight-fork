@@ -245,6 +245,14 @@ MCU_FLASH_SIZE     := FIRMWARE_SIZE
 DEFAULT_LD_SCRIPT   = $(LINKER_DIR)/stm32_ram_h750_exst.ld
 endif
 
+# BrainFPV boards use a custom bootloader that executes firmware from external QSPI flash
+ifneq ($(filter BRAINFPV,$(FEATURES)),)
+DEFAULT_LD_SCRIPT   = $(LINKER_DIR)/stm32_flash_h750_brainfpv.ld
+STARTUP_SRC         = STM32/startup/startup_stm32h750xx_brainfpv.s
+TARGET_FLASH_SIZE   = 1024
+MCU_FLASH_SIZE      = 1024
+endif
+
 ifeq ($(EXST),yes)
 # Upper 8 regions are reserved for a boot loader in EXST environment
 DEVICE_FLAGS       += -DMAX_MPU_REGIONS=8

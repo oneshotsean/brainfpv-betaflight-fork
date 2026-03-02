@@ -43,7 +43,7 @@
 #include "brainfpv/brainfpv_osd.h"
 #include "brainfpv/auto_sync_threshold.h"
 
-#include "ch.h"
+#include "brainfpv/hal.h"
 #include "video.h"
 #include "images.h"
 #include "osd_utils.h"

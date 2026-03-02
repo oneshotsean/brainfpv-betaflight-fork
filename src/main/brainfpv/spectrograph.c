@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "common/maths.h"
 
-#include "ch.h"
+/* ch.h removed: no ChibiOS in Betaflight 2025.x */
 #include "osd_utils.h"
 #include "arm_math.h"
 #include "drivers/light_led.h"

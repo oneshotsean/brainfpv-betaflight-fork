@@ -62,6 +62,10 @@
 
 #include "cms_menu_main.h"
 
+#if defined(BRAINFPV)
+#include "cms/cms_menu_brainfpv.h"
+#endif
+
 #ifdef USE_BATTERY_CONTINUE
 #include "sensors/battery.h"
 #include "pg/stats.h"
@@ -227,6 +231,9 @@ static const OSD_Entry menuMainEntries[] =
 #endif
     {"FC&FIRMWARE", OME_Submenu,  cmsMenuChange, &cmsx_menuFirmware},
     {"MISC",        OME_Submenu,  cmsMenuChange, &cmsx_menuMisc},
+#if defined(BRAINFPV)
+    {"BRAINFPV",    OME_Submenu,  cmsMenuChange,     &cmsx_menuBrainFPV},
+#endif
     {"SAVE/EXIT",   OME_Funcall,  cmsx_SaveExitMenu, NULL},
     {NULL, OME_END, NULL, NULL},
 };

@@ -21,8 +21,8 @@
 
 #pragma once
 
-// Maps to src/platform/STM32/target/STM32F446_BRAINFPV/
-#define FC_TARGET_MCU     STM32F446_BRAINFPV
+// Maps to src/platform/STM32/target/STM32H750_BRAINFPV/
+#define FC_TARGET_MCU     STM32H750_BRAINFPV
 
 #define BOARD_NAME        RADIX2
 #define MANUFACTURER_ID   BFPV

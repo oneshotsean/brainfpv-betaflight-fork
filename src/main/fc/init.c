@@ -86,6 +86,13 @@
 
 #include "fc/board_info.h"
 #include "fc/dispatch.h"
+
+#if defined(BRAINFPV)
+#include "brainfpv/brainfpv_system.h"
+#ifdef USE_BRAINFPV_OSD
+#include "brainfpv/brainfpv_osd.h"
+#endif
+#endif
 #include "fc/gps_lap_timer.h"
 #include "fc/init.h"
 #include "fc/rc_controls.h"
@@ -422,6 +429,10 @@ void initPhase1(void)
 
 void initPhase2(void)
 {
+#if defined(BRAINFPV)
+    brainFPVSystemInit();
+#endif
+
 #if defined(USE_BUTTONS)
 
     buttonsInit();
@@ -734,6 +745,10 @@ void initPhase3(void)
 
     LED0_OFF;
     LED1_OFF;
+
+#if defined(BRAINFPV)
+    brainFPVUpdateSettings();
+#endif
 
     imuInit();
 

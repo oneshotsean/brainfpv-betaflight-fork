@@ -79,7 +79,7 @@ static void Error_Handler(void) { while (1) { } }
 #define VIDEO_QSPI_USE_4_LINES
 #endif
 
-#include "ch.h"
+#include "brainfpv/hal.h"
 #include "video.h"
 
 // How many frames until we redraw
@@ -330,7 +330,7 @@ FAST_CODE static void swap_buffers(void)
  */
 void Video_Init(void)
 {
-    chBSemObjectInit(&onScreenDisplaySemaphore, FALSE);
+    chBSemObjectInit(&onScreenDisplaySemaphore, false);
 
     /* Configure and clear buffers */
     draw_buffer = buffer0;

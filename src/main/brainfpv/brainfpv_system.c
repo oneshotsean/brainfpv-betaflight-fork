@@ -40,8 +40,7 @@
 
 #include "pg/serial_uart.h"
 
-#include "ch.h"
-
+/* ch.h removed: no ChibiOS in Betaflight 2025.x */
 
 #if defined(BRAINFPV)
 
