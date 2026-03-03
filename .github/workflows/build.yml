@@ -1,3 +1,56 @@
-git add .github/workflows/build.yml
-git commit -m "Add GitHub Actions build workflow"
-git push
+name: Build BrainFPV Targets
+
+on:
+  push:
+    branches:
+      - brainfpv
+  pull_request:
+    branches:
+      - brainfpv
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [RADIX2, RADIX2HD]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache build toolchain
+        uses: actions/cache@v4
+        id: cache-toolchain
+        with:
+          path: tools
+          key: ${{ runner.os }}-${{ hashFiles('mk/tools.mk') }}
+
+      - name: Download and install toolchain
+        if: steps.cache-toolchain.outputs.cache-hit != 'true'
+        run: make arm_sdk_install
+
+      - name: Install BrainFPV fw_packer Python dependencies
+        run: pip3 install intelhex pyelftools pycrc
+
+      - name: Build ${{ matrix.target }}
+        run: make ${{ matrix.target }}
+
+      - name: Upload ${{ matrix.target }} hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-hex
+          path: obj/*.hex
+          retention-days: 60
+
+      - name: Upload ${{ matrix.target }} BrainFPV packed binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-brainfpv-bin
+          path: obj/*_brainfpv.bin
+          retention-days: 60
