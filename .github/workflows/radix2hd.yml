@@ -28,10 +28,34 @@ jobs:
       - name: Build and pack
         run: make brainfpv_bin TARGET=RADIX2HD
 
-      - name: Show image layout
+      # Nothing here can be tested on hardware, so at least assert the two
+      # things the bootloader depends on: the image is linked for the RAM
+      # address it loads to, and it carries the header identifying this board.
+      - name: Check bootloader image layout
         run: |
-          ls -la obj/
-          arm-none-eabi-objdump -h obj/main/betaflight_RADIX2HD.elf | head -20 || true
+          set -euo pipefail
+          OBJDUMP=$(find tools -name 'arm-none-eabi-objdump' -type f | head -1)
+          if [ -z "$OBJDUMP" ]; then
+            echo "::error::arm-none-eabi-objdump not found under tools/"
+            exit 1
+          fi
+          ELF=obj/main/betaflight_RADIX2HD.elf
+
+          echo "--- sections ---"
+          "$OBJDUMP" -h "$ELF"
+
+          VECTOR_VMA=$("$OBJDUMP" -h "$ELF" | awk '$2 == ".isr_vector" { print $4 }')
+          if [ "$VECTOR_VMA" != "24000000" ]; then
+            echo "::error::.isr_vector is at 0x$VECTOR_VMA, expected 0x24000000 (the address the BrainFPV bootloader loads to and jumps into)"
+            exit 1
+          fi
+          echo "OK: .isr_vector at 0x$VECTOR_VMA"
+
+          if ! "$OBJDUMP" -x "$ELF" | grep -q BRAINFPV_BL_HEADER; then
+            echo "::error::BRAINFPV_BL_HEADER missing - the bootloader would reject this image"
+            exit 1
+          fi
+          echo "OK: bootloader header present at 0x$("$OBJDUMP" -x "$ELF" | grep BRAINFPV_BL_HEADER | cut -d' ' -f1)"
 
       - name: Upload
         uses: actions/upload-artifact@v4
