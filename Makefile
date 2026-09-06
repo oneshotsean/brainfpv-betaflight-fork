@@ -517,6 +517,19 @@ $(TARGET_DFU): $(TARGET_HEX)
 	@echo "Creating DFU $(TARGET_DFU)" "$(STDOUT)"
 	$(V1) $(PYTHON) $(DFUSE-PACK) -i $< $@
 
+# Image for the BrainFPV bootloader. The bootloader reads the header embedded in
+# the image (see the target's brainfpv_bootloader.c) to find the vector table, so
+# -b is the address of that header rather than a fixed load address.
+BRAINFPV_FW_PACKER ?= brainfpv_fw_packer.py
+TARGET_BRAINFPV_BIN := $(BIN_DIR)/$(TARGET_FULLNAME)_brainfpv.bin
+
+$(TARGET_BRAINFPV_BIN): $(TARGET_HEX) $(TARGET_ELF)
+	$(V1) $(eval BRAINFPV_BL_HEADER_ADDR = 0x$(shell $(OBJDUMP) -x $(TARGET_ELF) | grep BRAINFPV_BL_HEADER | cut -d' ' -f1))
+	@echo "Packing for BrainFPV bootloader. Header address: $(BRAINFPV_BL_HEADER_ADDR)" "$(STDOUT)"
+	$(V1) $(BRAINFPV_FW_PACKER) --in $(TARGET_HEX) --out $(TARGET_BRAINFPV_BIN) \
+	    --dev $(TARGET) -b $(BRAINFPV_BL_HEADER_ADDR) -z \
+	    --name $(FORKNAME) --version $(FC_VER) --sha1 $(shell git rev-parse HEAD)
+
 else
 $(TARGET_UNPATCHED_BIN): $(TARGET_ELF)
 	@echo "Creating BIN (without checksum) $(TARGET_UNPATCHED_BIN)" "$(STDOUT)"
@@ -771,6 +784,11 @@ binary: $(PLATFORM_SDK_STAMP) $(AUTOHYDRATE_STAMPS) validate-deps
 .PHONY: hex
 hex: $(PLATFORM_SDK_STAMP) $(AUTOHYDRATE_STAMPS) validate-deps
 	$(V1) $(MAKE) $(MAKE_PARALLEL) $(TARGET_HEX)
+
+## brainfpv_bin      : build an image for the BrainFPV bootloader
+.PHONY: brainfpv_bin
+brainfpv_bin: $(PLATFORM_SDK_STAMP) $(AUTOHYDRATE_STAMPS) validate-deps
+	$(V1) $(MAKE) $(MAKE_PARALLEL) $(TARGET_BRAINFPV_BIN)
 
 .PHONY: uf2
 uf2: $(PLATFORM_SDK_STAMP) $(AUTOHYDRATE_STAMPS) validate-deps

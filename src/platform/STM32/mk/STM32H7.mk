@@ -233,7 +233,8 @@ endif
 else ifeq ($(TARGET_MCU),STM32H750xx)
 DEVICE_FLAGS       += -DSTM32H750xx
 DEFAULT_LD_SCRIPT   = $(LINKER_DIR)/stm32_flash_h750_128k.ld
-STARTUP_SRC         = STM32/startup/startup_stm32h743xx.s
+# ?= so a target that boots from RAM can supply its own startup code.
+STARTUP_SRC        ?= STM32/startup/startup_stm32h743xx.s
 DEFAULT_TARGET_FLASH := 128
 
 ifeq ($(TARGET_FLASH),)

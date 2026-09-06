@@ -26,10 +26,16 @@
 
 #include "light_led.h"
 
+#if defined(USE_BRAINFPV_RGB_LED_TIMER)
+#include "brainfpv_rgb_led_timer.h"
+#endif
+
 #if !defined(USE_VIRTUAL_LED)
 
 static IO_t leds[STATUS_LED_COUNT];
+#if !defined(USE_BRAINFPV_RGB_LED_TIMER)
 static uint8_t ledInversion = 0;
+#endif
 
 PG_REGISTER_WITH_RESET_TEMPLATE(statusLedConfig_t, statusLedConfig, PG_STATUS_LED_CONFIG, 0);
 
@@ -60,6 +66,14 @@ PG_RESET_TEMPLATE(statusLedConfig_t, statusLedConfig,
 
 void ledInit(const statusLedConfig_t *statusLedConfig)
 {
+#if defined(USE_BRAINFPV_RGB_LED_TIMER)
+    // The status LEDs are colours of one timer-driven RGB LED, not GPIOs.
+    UNUSED(statusLedConfig);
+    brainFpvRgbLedTimerInit();
+    for (int i = 0; i < (int)ARRAYLEN(leds); i++) {
+        ledSet(i, false);
+    }
+#else
     ledInversion = statusLedConfig->inversion;
     for (int i = 0; i < (int)ARRAYLEN(leds); i++) {
         leds[i] = IOGetByTag(statusLedConfig->ioTags[i]);
@@ -69,6 +83,7 @@ void ledInit(const statusLedConfig_t *statusLedConfig)
         }
         ledSet(i, false);
     }
+#endif
 }
 
 void ledToggle(int led)
@@ -76,7 +91,11 @@ void ledToggle(int led)
     if (led < 0 || led >= (int)ARRAYLEN(leds)) {
         return;
     }
+#if defined(USE_BRAINFPV_RGB_LED_TIMER)
+    brainFPVRgbLedToggle(led);
+#else
     IOToggle(leds[led]);
+#endif
 }
 
 void ledSet(int led, bool on)
@@ -84,8 +103,12 @@ void ledSet(int led, bool on)
     if (led < 0 || led >= (int)ARRAYLEN(leds)) {
         return;
     }
+#if defined(USE_BRAINFPV_RGB_LED_TIMER)
+    brainFPVRgbLedSet(led, on);
+#else
     const bool inverted = ledInversion & (1 << led);
     IOWrite(leds[led], on ? inverted : !inverted);
+#endif
 }
 
 #endif

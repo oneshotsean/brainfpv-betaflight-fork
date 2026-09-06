@@ -1,0 +1,44 @@
+name: Build RADIX2HD
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [radix2hd]
+  pull_request:
+    branches: [radix2hd]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install BrainFPV packer
+        run: pip install https://github.com/BrainFPV/brainfpv_fw_packer/archive/main.zip
+
+      - name: Install ARM toolchain
+        run: make arm_sdk_install
+
+      - name: Build and pack
+        run: make brainfpv_bin TARGET=RADIX2HD
+
+      - name: Show image layout
+        run: |
+          ls -la obj/
+          arm-none-eabi-objdump -h obj/main/betaflight_RADIX2HD.elf | head -20 || true
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: betaflight-radix2hd
+          path: |
+            obj/*_brainfpv.bin
+            obj/*.hex
+            obj/main/*.elf
+          if-no-files-found: error
